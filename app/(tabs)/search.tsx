@@ -1,14 +1,15 @@
 import { Text, View } from "react-native";
 
-export default function NotFound(){
+export default function Search() {
   return (
-    <View 
+    <View
       style={{
         flex: 1,
         justifyContent: "center",
         alignItems: "center",
-      }}>
-      <Text>404 Not Found</Text>
+      }}
+    >
+      <Text>Edit app/search.tsx to edit this screen.</Text>
     </View>
-  )
+  );
 }

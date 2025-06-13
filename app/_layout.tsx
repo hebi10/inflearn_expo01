@@ -1,20 +1,29 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Stack, useRouter } from "expo-router";
 import * as SecureStore from "expo-secure-store";
-import { createContext, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 import { Alert } from "react-native";
 
+interface User {
+  id: string;
+  name: string;
+  profileImageUrl: string;
+  description: string;
+}
+
 export const AuthContext = createContext<{
-  user?: Object | null;
-  login?: () => Promise<void>;
-  logout?: () => Promise<void>;
-}>({});
+  user?: User | null;
+  login?: () => Promise<any>;
+  logout?: () => Promise<any>;
+}>({
+  user: null,
+});
 
 export default function RootLayout() {
   const [user, setUser] = useState(null);
   const router = useRouter();
 
-  const login = () => {
+  const login = async () => {
     console.log("Login button pressed");
     fetch("/login", {
       method: "POST",
@@ -58,6 +67,18 @@ export default function RootLayout() {
       AsyncStorage.removeItem("user"),
     ]);
   };
+
+  useEffect(() => {
+    AsyncStorage.getItem("user")
+      .then((user) => {
+        setUser(user ? JSON.parse(user) : null)
+      })
+      // todo: validate access token
+      .catch((error) => {
+        console.error("Failed to retrieve user from AsyncStorage:", error);
+      }
+    );
+  }, []);
 
   return (
     <AuthContext value = {{user, login, logout}}>

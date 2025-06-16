@@ -1,48 +1,54 @@
-import { Redirect, useRouter } from "expo-router";
-import { useContext } from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Redirect, router } from "expo-router";
+import {
+  View,
+  Text,
+  Pressable,
+  StyleSheet,
+  Alert,
+  useColorScheme,
+} from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { AuthContext } from "./_layout";
+import { useContext } from "react";
 
 export default function Login() {
+  const colorScheme = useColorScheme();
+  const insets = useSafeAreaInsets();
   const { user, login } = useContext(AuthContext);
   const isLoggedIn = !!user;
-  const insets = useSafeAreaInsets();
-  const router = useRouter();
 
   if (isLoggedIn) {
     return <Redirect href="/(tabs)" />;
   }
-
   return (
     <View
       style={{
-        paddingTop: insets.top, 
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        paddingTop: insets.top,
+        backgroundColor: colorScheme === "dark" ? "black" : "white",
       }}
     >
-      <View>
-        <Pressable onPress={() => router.replace("/home")}>
-          <Text>Go Back</Text>
-        </Pressable>
-      </View>
-      <View>
-        <Pressable style={styles.loginButton} onPress={login}>
-          <Text style={styles.loginButtonText}>Login</Text>
-        </Pressable>
-      </View>
+      <Pressable onPress={() => router.back()}>
+        <Text>Back</Text>
+      </Pressable>
+      <Pressable style={styles.loginButton} onPress={login}>
+        <Text style={styles.loginButtonText}>Login</Text>
+      </Pressable>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   loginButton: {
-    backgroundColor: "#007AFF",
+    backgroundColor: "blue",
     padding: 10,
     borderRadius: 5,
-    alignItems: "center",
     width: 100,
+    alignItems: "center",
   },
   loginButtonText: {
-    color: "#fff",
+    color: "white",
   },
 });

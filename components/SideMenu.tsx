@@ -1,17 +1,17 @@
-import React, { useContext, useState } from "react";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  SafeAreaView,
-  Modal,
-  useColorScheme,
-  Pressable,
-  Appearance,
-} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { BlurView } from "expo-blur"; // For background blur effect
+import React, { useContext, useState } from "react";
+import {
+  Appearance,
+  Modal,
+  Pressable,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  useColorScheme,
+  View,
+} from "react-native";
 import { AuthContext } from "../app/_layout";
 
 interface SideMenuProps {

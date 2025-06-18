@@ -59,23 +59,23 @@ function AnimatedAppLoader({
         password: "1234",
       }),
     })
-      .then((res) => {
-        console.log("res", res, res.status);
-        if (res.status >= 400) {
-          return Alert.alert("Error", "Invalid credentials");
-        }
-        return res.json();
-      })
-      .then((data) => {
-        console.log("data", data);
-        setUser(data.user);
-        return Promise.all([
-          SecureStore.setItemAsync("accessToken", data.accessToken),
-          SecureStore.setItemAsync("refreshToken", data.refreshToken),
-          AsyncStorage.setItem("user", JSON.stringify(data.user)),
-        ]);
-      })
-      .catch(console.error);
+    .then((res) => {
+      console.log("res", res, res.status);
+      if (res.status >= 400) {
+        return Alert.alert("Error", "Invalid credentials");
+      }
+      return res.json();
+    })
+    .then((data) => {
+      console.log("data", data);
+      setUser(data.user);
+      return Promise.all([
+        SecureStore.setItemAsync("accessToken", data.accessToken),
+        SecureStore.setItemAsync("refreshToken", data.refreshToken),
+        AsyncStorage.setItem("user", JSON.stringify(data.user)),
+      ]);
+    })
+    .catch(console.error);
   };
 
   const logout = () => {
@@ -119,16 +119,6 @@ function AnimatedSplashScreen({
   const animation = useRef(new Animated.Value(1)).current;
   const { updateUser } = useContext(AuthContext);
 
-  useEffect(() => {
-    if (isAppReady) {
-      Animated.timing(animation, {
-        toValue: 0,
-        duration: 2000,
-        useNativeDriver: true,
-      }).start(() => setAnimationComplete(true));
-    }
-  }, [isAppReady]);
-
   const onImageLoaded = async () => {
     try {
       // 데이터 준비
@@ -150,6 +140,16 @@ function AnimatedSplashScreen({
     inputRange: [0, 1],
     outputRange: ["0deg", "360deg"],
   });
+
+  useEffect(() => {
+    if (isAppReady) {
+      Animated.timing(animation, {
+        toValue: 0,
+        duration: 2000,
+        useNativeDriver: true,
+      }).start(() => setAnimationComplete(true));
+    }
+  }, [isAppReady]);
 
   return (
     <View style={{ flex: 1 }}>

@@ -1,31 +1,28 @@
+import { AuthContext } from "@/app/_layout";
+import SideMenu from "@/components/SideMenu";
+import { Ionicons } from "@expo/vector-icons";
 import {
   type MaterialTopTabNavigationEventMap,
   type MaterialTopTabNavigationOptions,
   createMaterialTopTabNavigator,
 } from "@react-navigation/material-top-tabs";
-import { Slot, withLayoutContext } from "expo-router";
 import type {
   ParamListBase,
   TabNavigationState,
 } from "@react-navigation/native";
-import {
-  Pressable,
-  View,
-  Image,
-  Text,
-  useColorScheme,
-  Appearance,
-} from "react-native";
-import { useState } from "react";
-import { AuthContext } from "@/app/_layout";
-import { useContext } from "react";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { StyleSheet } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import SideMenu from "@/components/SideMenu";
 import { BlurView } from "expo-blur";
-import { TouchableOpacity } from "react-native";
-import { router } from "expo-router";
+import { Slot, router, withLayoutContext } from "expo-router";
+import { useContext, useState } from "react";
+import {
+  Image,
+  Pressable,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  useColorScheme
+} from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 const { Navigator } = createMaterialTopTabNavigator();
 
 export const MaterialTopTabs = withLayoutContext<

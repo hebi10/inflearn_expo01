@@ -1,24 +1,24 @@
-import React, { useState, useRef, useEffect, useCallback } from "react";
+import { FontAwesome, Ionicons } from "@expo/vector-icons";
+import * as ImagePicker from "expo-image-picker";
+import * as Location from "expo-location";
+import * as MediaLibrary from "expo-media-library";
+import { useRouter } from "expo-router";
+import React, { useState } from "react";
 import {
-  View,
+  Alert,
+  FlatList,
+  Image,
+  Linking,
+  Pressable,
+  Modal as RNModal,
+  StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
-  FlatList,
-  Image,
-  StyleSheet,
-  Modal as RNModal,
-  Pressable,
-  Linking,
-  Alert,
   useColorScheme,
+  View,
 } from "react-native";
-import { useRouter } from "expo-router";
-import { Ionicons, FontAwesome } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import * as Location from "expo-location";
-import * as ImagePicker from "expo-image-picker";
-import * as MediaLibrary from "expo-media-library";
 
 interface Thread {
   id: string;

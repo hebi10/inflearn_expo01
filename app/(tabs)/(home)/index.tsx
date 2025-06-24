@@ -8,7 +8,6 @@ export default function Index() {
   const colorScheme = useColorScheme();
   const path = usePathname();
   const [posts, setPosts] = useState<PostType[]>([]);
-  console.log("posts", posts.length);
 
   const onEndReached = useCallback(() => {
     console.log("onEndReached", posts.at(-1)?.id);

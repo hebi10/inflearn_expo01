@@ -41,6 +41,7 @@ export interface DetailedPost extends Post {
 export default function Post({ item }: { item: Post }) {
   const router = useRouter();
   const colorScheme = useColorScheme();
+
   // 공유 기능 핸들러
   const handleShare = async (username: string, postId: string) => {
     const shareUrl = `thread://@${username}/post/${postId}`;

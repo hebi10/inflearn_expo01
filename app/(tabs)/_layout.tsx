@@ -190,6 +190,8 @@ export default function TabLayout() {
               if (!isLoggedIn) {
                 e.preventDefault();
                 openLoginModal();
+              } else {
+                router.navigate(`/@${user.id}`);
               }
             },
           }}

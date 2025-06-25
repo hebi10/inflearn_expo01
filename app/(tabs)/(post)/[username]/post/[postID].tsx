@@ -1,24 +1,41 @@
-import {
-  View,
-  Text,
-  StyleSheet,
-  useColorScheme,
-  ScrollView,
-  Image,
-  Pressable,
-} from "react-native";
-import Post from "@/components/Post";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import Post, { Post as PostType } from "@/components/Post";
 import SideMenu from "@/components/SideMenu";
 import { Ionicons } from "@expo/vector-icons";
-import { useState } from "react";
-import { useRouter } from "expo-router";
+import { FlashList } from "@shopify/flash-list";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { useEffect, useState } from "react";
+import {
+  Image,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  useColorScheme,
+  View,
+} from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function PostScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const colorScheme = useColorScheme();
   const [isSideMenuOpen, setIsSideMenuOpen] = useState(false);
+  const { username, postID } = useLocalSearchParams();
+  const [post, setPost] = useState<PostType | null>(null);
+  const [comments, setComments] = useState<PostType[]>([]);
+
+  useEffect(() => {
+    fetch(`/posts/${postID}`)
+      .then((res) => res.json())
+      .then((data) => {
+        setPost(data.post);
+      });
+    fetch(`/posts/${postID}/comments`)
+      .then((res) => res.json())
+      .then((data) => {
+        setComments(data.posts);
+      });
+  }, []);
 
   return (
     <View
@@ -70,21 +87,10 @@ export default function PostScreen() {
           onClose={() => setIsSideMenuOpen(false)}
         />
       </View>
-      <ScrollView style={styles.scrollView}>
-        <Post
-          item={{
-            id: "1",
-            username: "zerocho",
-            displayName: "Zerocho",
-            content: "Hello, world!",
-            timeAgo: "1 hour ago",
-            likes: 10,
-            comments: 5,
-            reposts: 2,
-            isVerified: true,
-            avatar: "https://randomuser.me/api/portraits/men/1.jpg",
-            image: `https://picsum.photos/800/600?random=${Math.random()}`,
-          }}
+      {post && 
+       <ScrollView style={styles.scrollView} nestedScrollEnabled={true}>
+       <Post
+          item={post}
         />
         <View style={styles.repliesHeader}>
           <Text
@@ -97,36 +103,13 @@ export default function PostScreen() {
             Replies
           </Text>
         </View>
-        <Post
-          item={{
-            id: "2",
-            username: "sarah",
-            displayName: "Sarah",
-            content: "Hello, comment!",
-            timeAgo: "1 hour ago",
-            likes: 10,
-            comments: 5,
-            reposts: 2,
-            isVerified: true,
-            avatar: "https://randomuser.me/api/portraits/women/1.jpg",
-          }}
-        />
-        <Post
-          item={{
-            id: "3",
-            username: "anne",
-            displayName: "Anne",
-            content: "Another comment!",
-            timeAgo: "1 hour ago",
-            likes: 10,
-            comments: 5,
-            reposts: 2,
-            isVerified: true,
-            avatar: "https://randomuser.me/api/portraits/women/2.jpg",
-            image: `https://picsum.photos/800/600?random=${Math.random()}`,
-          }}
+        <FlashList
+          data={comments}
+          renderItem={({ item }) => <Post item={item} />}
+          estimatedItemSize={200}
         />
       </ScrollView>
+      }
     </View>
   );
 }

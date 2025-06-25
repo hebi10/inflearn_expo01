@@ -33,44 +33,36 @@ export interface Post {
 }
 
 export interface DetailedPost extends Post {
-  // Post의 필드들: id, username, displayName, content, timeAgo, likes, comments, reposts, isVerified?, avatar?, image?
-  isLiked?: boolean; // isLiked 추가
-  shares?: number; // shares 추가
+  isLiked?: boolean;
+  shares?: number;
 }
 
 export default function Post({ item }: { item: Post }) {
   const router = useRouter();
   const colorScheme = useColorScheme();
 
-  // 공유 기능 핸들러
   const handleShare = async (username: string, postId: string) => {
     const shareUrl = `thread://@${username}/post/${postId}`;
     try {
       await Share.share({
         message: shareUrl,
-        url: shareUrl, // iOS에서는 url도 함께 전달하는 것이 좋습니다.
+        url: shareUrl,
       });
     } catch (error) {
       console.error("Error sharing post:", error);
-      // 사용자에게 오류 메시지를 표시할 수도 있습니다.
     }
   };
 
-  // 게시글 클릭 핸들러 수정
   const handlePostPress = (post: Post) => {
     console.log("postClick");
-    // DetailedPost 타입에 맞게 데이터 변환 (isLiked, shares는 상세 화면에서 관리)
     const detailedPost: DetailedPost = {
       ...post,
-      // isLiked, shares 는 PostScreen 에서 초기화하거나 API 응답으로 받아와야 함
-      // 여기서는 기본값 또는 undefined 로 설정
-      isLiked: false, // 예시: 기본값 false
-      shares: 0, // 예시: 기본값 0
+      isLiked: false,
+      shares: 0,
     };
     router.push(`/@${post.user.id}/post/${post.id}`);
   };
 
-  // 사용자 정보 클릭 핸들러 (아바타 또는 이름)
   const handleUserPress = (post: Post) => {
     router.push(`/@${post.user.id}`);
   };

@@ -1,6 +1,7 @@
 import "expo-router/entry";
 
 import { faker } from "@faker-js/faker";
+import * as Device from "expo-device";
 import {
   belongsTo,
   createServer,
@@ -18,9 +19,9 @@ declare global {
   }
 }
 
-let zerocho:any;
+let zerocho: any;
 
-if (__DEV__) {
+if (__DEV__ && !Device.isDevice) {
   if (window.server) {
     window.server.shutdown();
   }
@@ -150,7 +151,6 @@ if (__DEV__) {
       this.get("/posts/:id", (schema, request) => {
         return schema.find("post", request.params.id);
       });
-
       this.get("/posts/:id/comments", (schema, request) => {
         const comments = schema.all("post");
         let targetIndex = -1;
@@ -163,7 +163,6 @@ if (__DEV__) {
           .sort((a, b) => parseInt(b.id) - parseInt(a.id))
           .slice(targetIndex + 1, targetIndex + 11);
       });
-      
       this.get("/users/:id", (schema, request) => {
         console.log("request", request.params.id);
         return schema.find("user", request.params.id.slice(1));

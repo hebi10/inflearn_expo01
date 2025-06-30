@@ -1,12 +1,50 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Asset } from "expo-asset";
 import Constants from "expo-constants";
+import * as Device from "expo-device";
+import * as Notifications from "expo-notifications";
 import { Stack } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { createContext, useContext, useEffect, useRef, useState } from "react";
-import { Alert, Animated, StyleSheet, View } from "react-native";
+import { Alert, Animated, Linking, StyleSheet, View } from "react-native";
+import Toast, { BaseToast } from "react-native-toast-message";
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldPlaySound: true,
+    shouldSetBadge: true,
+    shouldShowBanner: true,
+    shouldShowList: true,
+  }),
+  handleSuccess(notificationId) {
+    console.log("handleSuccess:", notificationId);
+  },
+  handleError(notificationId, error) {
+    console.error("handleError:", notificationId, error);
+  }
+});
+
+async function sendPushNotification(expoPushToken: string) {
+  const message = {
+    to: expoPushToken,
+    sound: 'default',
+    title: 'Original Title',
+    body: 'And here is the body!',
+    data: { someData: 'goes here' },
+  };
+
+  await fetch('https://exp.host/--/api/v2/push/send', {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Accept-encoding': 'gzip, deflate',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(message),
+  });
+}
 
 // Instruct SplashScreen not to hide yet, we want to do this manually
 SplashScreen.preventAutoHideAsync().catch(() => {
@@ -118,6 +156,7 @@ function AnimatedSplashScreen({
   const [isSplashAnimationComplete, setAnimationComplete] = useState(false);
   const animation = useRef(new Animated.Value(1)).current;
   const { updateUser } = useContext(AuthContext);
+  const [expoPushToken, setExpoPushToken] = useState<string | null>(null);
 
   const onImageLoaded = async () => {
     try {
@@ -129,6 +168,24 @@ function AnimatedSplashScreen({
         // TODO: validating access token
       ]);
       await SplashScreen.hideAsync();
+      const { status } = await Notifications.requestPermissionsAsync();
+      if (status !== "granted") {
+        return Linking.openSettings();
+      }
+      const token = await Notifications.getExpoPushTokenAsync({
+        projectId:
+          Constants?.expoConfig?.extra?.eas?.projectId ??
+          Constants?.easConfig?.projectId,
+      });
+      console.log("Token:", token);
+      setExpoPushToken(token.data);
+
+      useEffect(() => {
+        if (expoPushToken && Device.isDevice) {
+          sendPushNotification(expoPushToken).catch(console.error);
+        }
+      }, [expoPushToken]);
+      
     } catch (e) {
       console.error(e);
     } finally {
@@ -186,6 +243,33 @@ function AnimatedSplashScreen({
 }
 
 export default function RootLayout() {
+  const toastConfig = {
+    customToast: (props: any) => (
+      <BaseToast
+        style={{
+          backgroundColor: "white",
+          borderRadius: 20,
+          height: 40,
+          borderLeftWidth: 0,
+          shadowOpacity: 0,
+          justifyContent: "center",
+        }}
+        contentContainerStyle={{
+          paddingHorizontal: 16,
+          alignItems: "center",
+          height: 40,
+        }}
+        text1Style={{
+          color: "black",
+          fontSize: 14,
+          fontWeight: "500",
+        }}
+        text1={props.text1}
+        onPress={props.onPress}
+      />
+    ),
+  };
+
   return (
     <AnimatedAppLoader image={require("../assets/images/react-logo.png")}>
       <StatusBar style="auto" animated hidden={false} />
@@ -193,6 +277,7 @@ export default function RootLayout() {
         <Stack.Screen name="(tabs)" />
         <Stack.Screen name="modal" options={{ presentation: "modal" }} />
       </Stack>
+      <Toast config={toastConfig} />
     </AnimatedAppLoader>
   );
 }
